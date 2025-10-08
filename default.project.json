@@ -1,0 +1,36 @@
+{
+  "name": "projeto-dragon-city",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "Game/shared"
+      },
+      "Packages": {
+        "$path": "Packages/"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "Game/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "Game/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}
