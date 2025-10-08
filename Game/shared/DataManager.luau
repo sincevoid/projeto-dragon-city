@@ -15,7 +15,7 @@ function DataManager:Get(player: Player?)
 end
 
 function DataManager:Update()
-    if IsClient then return error("You should not be able to do this... (DT0001)") end
+    if IsClient then return error("Você não deveria ter acesso a isso... (DT0001)") end
     --> Update data
 end
 

@@ -22,6 +22,10 @@
         }
       }
     },
+    "ReplicatedFirst": {
+      "$path": "Game/cache",
+      "$ignoreUnknownInstances": true
+    },
     "Workspace": {
       "$properties": {
         "FilteringEnabled": true
