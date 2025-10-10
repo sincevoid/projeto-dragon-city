@@ -4,7 +4,7 @@
     "$className": "DataModel",
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "Game/shared"
+        "$path": "Game/ReplicatedStorage"
       },
       "Packages": {
         "$path": "Packages/"
@@ -12,29 +12,19 @@
     },
     "ServerScriptService": {
       "Server": {
-        "$path": "Game/server"
+        "$path": "Game/ServerScriptService"
       }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": {
-          "$path": "Game/client"
+        "ClientPlayer": {
+          "$path": "Game/StarterPlayerScripts"
         }
       }
     },
     "ReplicatedFirst": {
-      "$path": "Game/cache",
+      "$path": "Game/ReplicatedFirst",
       "$ignoreUnknownInstances": true
-    },
-    "Workspace": {
-      "$properties": {
-        "FilteringEnabled": true
-      }
-    },
-    "SoundService": {
-      "$properties": {
-        "RespectFilteringEnabled": true
-      }
     }
   }
 }
