@@ -6,7 +6,7 @@ local places = {
 
 local PlaceDetector = function()
     local place = game.PlaceId
-    for name, id in pairs(places) do
+    for name, id in places do
         if place == id then
             return name
         end
