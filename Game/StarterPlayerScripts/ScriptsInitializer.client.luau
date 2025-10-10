@@ -22,6 +22,10 @@ function moveChildren(target : Instance, newChildParent : Instance, destroy : bo
 end
 
 for placeName, value : Instance in pairs(script.Parent.ClientPlayer:GetChildren()) do
+    if value.Name == "Replicated" then
+        continue
+    end
+
     if value:GetAttribute("PlaceId") ~= PlaceDetector:GetCurrentPlaceId() then
         value:Destroy()
         continue
