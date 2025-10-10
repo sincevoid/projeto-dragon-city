@@ -2,9 +2,19 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Knit = require(Packages.knit)
 
-Knit.AddServices(script)
+-- > Espera o jogo carregar se ainda não carregou...
 
--- Inicializa o knit (Servidor)
+repeat
+    task.wait()
+until ReplicatedStorage:GetAttribute("ClientPlayerLoaded")
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+Knit.AddControllers(script)
+
+-- Inicializa o knit
 Knit.Start():catch(function(error: any)
     local text = "Knit encontrou um erro: %s (KN0001)"
     error(text:format(tostring(error)))

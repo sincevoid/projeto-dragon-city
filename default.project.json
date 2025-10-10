@@ -11,14 +11,58 @@
       }
     },
     "ServerScriptService": {
-      "Server": {
-        "$path": "Game/ServerScriptService"
+      "$ignoreUnknownInstances": true,
+      "ServerHandler": {
+        "$className": "Folder",
+        "FarmPlace": {
+          "$path": "Game/ServerScriptService/Server/FarmPlace",
+          "$attributes": {
+            "PlaceId": 72980189537140
+          }
+        },
+        "PVPlace": {
+          "$path": "Game/ServerScriptService/Server/PVPlace",
+          "$attributes": {
+            "PlaceId": 78414932677329
+          }
+        },
+        "LobbyPlace": {
+          "$path": "Game/ServerScriptService/Server/LobbyPlace",
+          "$attributes": {
+            "PlaceId": 129920291664559
+          }
+        }
+      },
+      "ScriptsInitializer": {
+        "$path": "Game/ServerScriptService/ScriptsInitializer.server.luau"
       }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
+        "$ignoreUnknownInstances": true,
         "ClientPlayer": {
-          "$path": "Game/StarterPlayerScripts"
+          "$className": "Folder",
+          "FarmPlace": {
+            "$path": "Game/StarterPlayerScripts/ClientPlayer/FarmPlace",
+            "$attributes": {
+              "PlaceId": 72980189537140
+            }
+          },
+          "PVPlace": {
+            "$path": "Game/StarterPlayerScripts/ClientPlayer/PVPlace",
+            "$attributes": {
+              "PlaceId": 78414932677329
+            }
+          },
+          "LobbyPlace": {
+            "$path": "Game/StarterPlayerScripts/ClientPlayer/LobbyPlace",
+            "$attributes": {
+              "PlaceId": 129920291664559
+            }
+          }
+        },
+        "ScriptsInitializer": {
+          "$path": "Game/StarterPlayerScripts/ScriptsInitializer.client.luau"
         }
       }
     },

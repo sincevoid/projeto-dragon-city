@@ -4,15 +4,14 @@ local places = {
     ["Lobby"] = 129920291664559
 }
 
-local PlaceDetector = function()
-    local place = game.PlaceId
-    for name, id in pairs(places) do
-        if place == id then
-            return name
-        end
-    end
+local PlaceDetector = {}
 
-    return "Unknown"
+function PlaceDetector:GetCurrentPlace()
+    return places[game.PlaceId] or "Unknown"
+end
+
+function PlaceDetector:GetCurrentPlaceId()
+    return game.PlaceId
 end
 
 return PlaceDetector

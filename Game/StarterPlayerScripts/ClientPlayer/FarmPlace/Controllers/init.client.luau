@@ -3,6 +3,11 @@ local Packages = ReplicatedStorage.Packages
 local Knit = require(Packages.knit)
 
 -- > Espera o jogo carregar se ainda não carregou...
+
+repeat
+    task.wait()
+until ReplicatedStorage:GetAttribute("ClientPlayerLoaded")
+
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end

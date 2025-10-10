@@ -8,4 +8,7 @@ if loadingScreen and not RunService:IsStudio() then
     ReplicatedFirst:RemoveDefaultLoadingScreen()
 end
 
+
+
+
 -- Remove the default loading screen
