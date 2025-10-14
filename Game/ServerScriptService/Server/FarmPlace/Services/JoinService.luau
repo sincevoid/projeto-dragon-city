@@ -14,50 +14,58 @@
 ]]
 
 local Players = game:GetService("Players")
-local Knit = require(game.ReplicatedStorage.Packages.Knit)
+local RunService = game:GetService("RunService")
+local Knit = require(game.ReplicatedStorage.Packages.knit)
 
 local JoinService = Knit.CreateService({
-    Name = "JoinService",
-    Client = {}, -- Mantido vazio, caso precise expor algo no futuro
+	Name = "JoinService",
+	Client = {}, -- Mantido vazio, caso precise expor algo no futuro
 })
 
 --// PLAYER JOIN / LEAVE ------------------------------------------------------
 
 -- Chamado quando o jogador entra no jogo
 function JoinService:OnPlayerJoin(player: Player)
-    print(string.format("[JoinService] Jogador entrou: %s", player.Name))
+	if RunService:IsStudio() then
+		_G.print(string.format("[JoinService] Jogador entrou: %s", player.Name))
+	end
 
-    -- Exemplo: integração futura
-    -- local IslandService = Knit.GetService("IslandService")
-    -- IslandService:CreateIslandFor(player)
+	-- Exemplo: integração futura
+	-- local IslandService = Knit.GetService("IslandService")
+	-- IslandService:CreateIslandFor(player)
 end
 
 -- Chamado quando o jogador sai do jogo
 function JoinService:OnPlayerLeave(player: Player)
-    print(string.format("[JoinService] Jogador saiu: %s", player.Name))
+	if RunService:IsStudio() then
+		_G.print(string.format("[JoinService] Jogador saiu: %s", player.Name))
+	end
 
-    -- Exemplo: salvar progresso
-    -- local DataService = Knit.GetService("DataService")
-    -- DataService:SavePlayerData(player)
+	-- Exemplo: salvar progresso
+	-- local DataService = Knit.GetService("DataService")
+	-- DataService:SavePlayerData(player)
 end
 
 --// KNIT LIFECYCLE -----------------------------------------------------------
 
 function JoinService:KnitInit()
-    -- Conecta eventos globais de entrada e saída
-    Players.PlayerAdded:Connect(function(player)
-        self:OnPlayerJoin(player)
-    end)
+	-- Conecta eventos globais de entrada e saída
+	Players.PlayerAdded:Connect(function(player)
+		self:OnPlayerJoin(player)
+	end)
 
-    Players.PlayerRemoving:Connect(function(player)
-        self:OnPlayerLeave(player)
-    end)
-
-    print("[JoinService] Inicializado")
+	Players.PlayerRemoving:Connect(function(player)
+		self:OnPlayerLeave(player)
+	end)
+	if RunService:IsStudio() then
+		_G.print("[JoinService] Inicializado")
+	end
 end
 
 function JoinService:KnitStart()
-    print("[JoinService] Em execução")
+	if RunService:IsStudio() then
+		_G.print("[JoinService] Em execução")
+	end
 end
 
 return JoinService

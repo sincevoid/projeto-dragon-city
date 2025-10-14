@@ -1,153 +1,130 @@
+--!strict
+
 --[[
     ProximityController
     -------------------
-    Handles all ProximityPrompts within the Workspace and links them to defined actions.
-    Each prompt must contain an "ActionName" attribute that maps to a function in Actions.
+    Manages all ProximityPrompts in the Workspace and executes corresponding actions.
+    Now fully scalable to handle multiple teleport types and future actions.
 
-    Features:
-    - Automatically detects and registers new ProximityPrompts.
-    - Supports multiple actions (e.g., teleporting players).
-    - Uses Trove for automatic connection and memory cleanup.
-
-    Dependencies:
-    - Knit (controller architecture)
-    - Trove (resource cleanup)
-    - TeleporterService (for teleport actions)
+    Requirements:
+    - Each ProximityPrompt must have an "ActionName" attribute.
+    - Any new teleport action should exist in TeleporterService and be added to the Actions table.
 ]]
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
-local Knit = require(game.ReplicatedStorage.Packages.Knit)
-local Trove = require(game.ReplicatedStorage.Packages.Trove)
+local Knit = require(game.ReplicatedStorage.Packages.knit)
+local Trove = require(game.ReplicatedStorage.Packages.trove)
 
 local Player = Players.LocalPlayer
 
 local ProximityController = Knit.CreateController({
-    Name = "ProximityController",
+	Name = "ProximityController",
 })
 
--- Knit services are set during KnitStart
+-- Knit Services
 local TeleporterService
 
---[[
-    ACTIONS DICTIONARY
-    ------------------
-    Maps each possible ActionName to a specific function.
-    Each function receives:
-        self (ProximityController instance)
-        player (Player who triggered the prompt)
-]]
-ProximityController.Actions = {
-    --- Teleports the player to their own island.
-    --- @param self table Reference to ProximityController instance
-    --- @param player Player The player who triggered the prompt
-    TeleportOwnIsland = function(self, player: Player)
-        TeleporterService:CallTeleport("OwnIsland")
-    end,
-
-    --- Teleports the player to another player’s island.
-    --- @param self table Reference to ProximityController instance
-    --- @param player Player The player who triggered the prompt
-    --- @param target Player The target player whose island will be visited
-    TeleportToIsland = function(self, player: Player, target: Player)
-        TeleporterService:CallTeleport(target)
-    end
+-- =========================
+-- ACTIONS
+-- =========================
+-- Actions table with type annotation
+local Actions: { [string]: (self: table, Player, ...any) -> () } = {
+	TeleportOwnIsland = function(_, player: Player)
+		TeleporterService:CallTeleport("OwnIsland")
+	end,
+	TeleportCentral = function(_, player: Player)
+		TeleporterService:CallTeleport("Central")
+	end,
 }
+ProximityController.Actions = Actions
 
---[[
-    Creates a new ProximityController instance for a specific ProximityPrompt.
+-- =========================
+-- PROXIMITY PROMPT INSTANCE
+-- =========================
 
-    @param prompt ProximityPrompt The prompt being controlled
-    @return table ProximityController instance
-]]
+--- Creates a new controller instance for a prompt
+--- @param prompt ProximityPrompt
+--- @return table
 function ProximityController.new(prompt: ProximityPrompt)
-    local self = setmetatable({}, { __index = ProximityController })
-    self.Prompt = prompt
-    self._trove = Trove.new()
+	local self = setmetatable({}, { __index = ProximityController })
+	self.Prompt = prompt
+	self._trove = Trove.new()
 
-    -- Connects the Triggered event
-    self._trove:Connect(prompt.Triggered, function(player)
-        self:OnTrigger(player)
-    end)
+	-- Connect Triggered event
+	self._trove:Connect(prompt.Triggered, function(player)
+		self:OnTrigger(player)
+	end)
 
-    return self
+	return self
 end
 
---[[
-    Cleans up Trove connections and destroys associated resources.
-
-    @return nil
-]]
+--- Destroys controller resources
 function ProximityController:Destroy()
-    if self._trove then
-        self._trove:Destroy()
-        self._trove = nil
-    end
+	if self._trove then
+		self._trove:Destroy()
+	end
 end
 
---[[
-    Called when a ProximityPrompt is triggered by a player.
-    Executes the associated action defined by the "ActionName" attribute.
-
-    @param player Player The player who triggered the prompt
-    @return nil
-]]
+--- Called when the prompt is triggered
+--- @param player Player
 function ProximityController:OnTrigger(player: Player)
-    local actionName = self.Prompt:GetAttribute("ActionName")
+	local actionName = self.Prompt:GetAttribute("ActionName")
+	if not actionName then
+		warn("[ProximityController] ProximityPrompt missing 'ActionName' attribute")
+		return
+	end
 
-    if not actionName then
-        warn("[ProximityController] ProximityPrompt missing 'ActionName' attribute.")
-        return
-    end
+	local action = self.Actions[actionName]
+	if not action then
+		warn("[ProximityController] No action found for ActionName:", actionName)
+		return
+	end
 
-    local action = self.Actions[actionName]
-    if not action then
-        warn(string.format("[ProximityController] No action found for '%s'.", actionName))
-        return
-    end
-
-    -- Executes the registered action
-    action(self, player)
+	action(self, player)
 end
 
---[[
-    Called before Knit services are started.
-    Used for early setup if necessary.
-]]
+-- =========================
+-- KNIT LIFECYCLE
+-- =========================
+
 function ProximityController:KnitInit()
-    -- Intentionally left empty for compatibility
+	-- Nothing here, kept for Knit compatibility
 end
 
---[[
-    Called once all Knit services are available.
-    Registers existing and dynamically added ProximityPrompts.
-
-    @return nil
-]]
 function ProximityController:KnitStart()
-    TeleporterService = Knit.GetService("TeleporterService")
+	print("parou aqui")
+	TeleporterService = Knit.GetService("TeleporterService")
 
-    --- Registers a ProximityPrompt instance if not already registered.
-    --- @param descendant Instance The object to check and register
-    local function registerPrompt(descendant)
-        if not descendant:IsA("ProximityPrompt") then return end
-        if descendant:GetAttribute("Registered") then return end
+	-- Helper to register new prompts
+	local function registerPrompt(descendant)
+		if not descendant:IsA("ProximityPrompt") then
+			return
+		end
+		if descendant:GetAttribute("Registered") then
+			return
+		end
 
-        descendant:SetAttribute("Registered", true)
-        ProximityController.new(descendant)
-        print(string.format("[ProximityController] Registered Prompt: %s", descendant.Name))
-    end
+		descendant:SetAttribute("Registered", true)
+		ProximityController.new(descendant)
+		if RunService:IsStudio() then
+			_G.print("[ProximityController] Prompt registered:", descendant.Name)
+		end
+	end
 
-    -- Automatically detects new prompts added to Workspace
-    Workspace.DescendantAdded:Connect(registerPrompt)
+	-- Connect dynamically added prompts
+	Workspace.DescendantAdded:Connect(registerPrompt)
 
-    -- Registers all existing prompts at startup
-    for _, descendant in ipairs(Workspace:GetDescendants()) do
-        registerPrompt(descendant)
-    end
+	-- Register all existing prompts
+	for _, descendant in Workspace:GetDescendants() do
+		registerPrompt(descendant)
+	end
 
-    print("[ProximityController] Successfully started.")
+	if RunService:IsStudio() then
+		_G.print("[ProximityController] Running")
+	end
 end
 
 return ProximityController

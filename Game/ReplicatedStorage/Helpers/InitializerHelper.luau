@@ -32,13 +32,17 @@ end
 --- Helper:AddReplicatedKnitComponents(componentsTable, initComponent) --- Move all ModulesScripts into the init component
 ---`
 function Helper:AddReplicatedKnitComponents(itemsT : {number : ModuleScript}, initComponent : Script | LocalScript | Folder )
+    
+    assert(initComponent, "Needs a initComponent")
     assert(type(itemsT) == "table", "Invalid value provided on argument #1") 
     assert(initComponent.ClassName == "Script" or "LocalScript" or "Folder", "Invalid value provided on argument #2")
     assert(initComponent.Name == self:GetKnitGroupComponentName(), string.format("Invalid initComponent, expected %s got %s", self:GetKnitGroupComponentName(), initComponent.Name))
     
     for _,v in pairs(itemsT) do
         if RunService:IsStudio() then
-            print(v, initComponent)
+            if RunService:IsStudio() then
+                _G.print(v, initComponent)
+            end
         end
         v.Parent = initComponent
     end
@@ -56,13 +60,13 @@ end
 --- -- Example 1: Checking a Controller on the client
 --- local isController = Helper:IsAKnitComponent(someModule)
 --- if isController then
----     print("Valid Knit Controller detected!")
+---     _G.print("Valid Knit Controller detected!")
 --- end
 ---
 --- -- Example 2: Checking a Service on the server
 --- local isService = Helper:IsAKnitComponent(serviceModule)
 --- if isService then
----     print("Valid Knit Service detected!")
+---     _G.print("Valid Knit Service detected!")
 --- end
 --- ```
 ---
@@ -101,7 +105,7 @@ end
 --- ## *Application:*
 --- ```lua
 --- local groupName = Helper:GetKnitGroupComponentName()
---- print(groupName) 
+--- _G.print(groupName) 
 --- -- Output example:
 --- -- "Services" (if running on server)
 --- -- "Controllers" (if running on client)
@@ -130,7 +134,7 @@ end
 --- ## *Application:*
 --- ```lua
 --- local status = Helper:GetLoadValue(script)
---- print(status)
+--- _G.print(status)
 --- -- Output examples:
 --- -- "ServerLoaded"            -> When running on the server
 --- -- "ClientCharacterLoaded"   -> When script is under the player's Character
